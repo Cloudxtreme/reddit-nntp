@@ -38,7 +38,7 @@
                extract-posts
                ((partial map (fn [post]
                                (augment-post-with-comments (grab-comments-from-reddit post) post))))
-               ((partial map pretty-print-post))))
+               ((partial map flatten-post-and-comments))))
 
 
 (defn -main

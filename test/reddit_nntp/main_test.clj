@@ -1,6 +1,19 @@
 (ns reddit-nntp.main-test
   (:require [clojure.test :refer :all]
-            [reddit-nntp.main :refer :all]))
+            [reddit-nntp.main :refer :all]
+            [clojure.data.json :as json]))
+
+(defn stub-grab-posts-from-reddit []
+  (json/write-str
+   { "data"
+     { "children"
+       [
+        { "data"
+          { "id" "2qha"
+            "title" "Foo"}}
+        { "data"
+          { "id" "3ab4"
+            "title" "Bar"}}]}}))
 
 (deftest test-extract-posts
   (let [expected #{ {"title" "Foo" "id" "2qha"},

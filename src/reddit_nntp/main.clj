@@ -12,18 +12,6 @@
         resp (client/get "http://www.reddit.com/r/crypto/.json" opts)]
     (get resp :body)))
 
-(defn stub-grab-posts-from-reddit []
-  (json/write-str
-   { "data"
-     { "children"
-       [
-        { "data"
-          { "id" "2qha"
-            "title" "Foo"}}
-        { "data"
-          { "id" "3ab4"
-            "title" "Bar"}}]}}))
-
 (defn pretty-print-post [post]
   (select-keys post ["title" "id" "children"]))
 

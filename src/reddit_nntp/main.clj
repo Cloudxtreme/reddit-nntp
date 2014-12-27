@@ -16,11 +16,11 @@
   (select-keys post ["title" "id" "children"]))
 
 (defn grab-comments-from-reddit [post]
-  { "id" "foo"
+  [{ "id" "foo"
     "body" "This."
-    "children" [ "id" "foo.bar"
-                 "body" "Worst comment"
-                 "children" [] ]})
+    "children" [ { "id" "foo.bar"
+                   "body" "Worst comment"
+                   "children" [] }]}])
 
 (defn augment-post-with-comments [comments, post]
   (assoc post "children" comments))

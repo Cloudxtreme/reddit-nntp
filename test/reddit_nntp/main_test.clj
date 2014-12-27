@@ -48,18 +48,18 @@
 (deftest test-reddit-nntp
   (let
       [ expected
-         [{"children"
-            {"id" "foo",
+       [{"id" "2qha"
+         "title" "Foo"
+         "children"
+            [{"id" "foo",
              "body" "This.",
-             "children" ["id" "foo.bar" "body" "Worst comment" "children" []]},
-           "id" "2qha",
-           "title" "Foo"}
-          {"children"
-            {"id" "foo",
-             "body" "This.",
-             "children" ["id" "foo.bar" "body" "Worst comment" "children" []]},
-           "id" "3ab4",
-           "title" "Bar"}]
+             "children" [{"id" "foo.bar" "body" "Worst comment" "children" []}]}]}
+        {"id" "3ab4"
+         "title" "Bar"
+         "children"
+            [{"id" "foo",
+              "body" "This.",
+              "children" [{"id" "foo.bar" "body" "Worst comment" "children" []}]}]}]
         actual (reddit-nntp stub-grab-posts-from-reddit grab-comments-from-reddit)]
     (is (= expected actual))))
 

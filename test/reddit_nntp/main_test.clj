@@ -31,3 +31,21 @@
                                   "body" "Yes" } ] }
         actual (augment-post-with-comments input-comments input-post)]
     (is (= expected actual))))
+
+(deftest test-reddit-nntp
+  (let
+      [ expected
+         [{"comments"
+            {"id" "foo",
+             "body" "This.",
+             "children" ["id" "foo.bar" "body" "Worst comment" "children" []]},
+           "id" "2qha",
+           "title" "Foo"}
+          {"comments"
+            {"id" "foo",
+             "body" "This.",
+             "children" ["id" "foo.bar" "body" "Worst comment" "children" []]},
+           "id" "3ab4",
+           "title" "Bar"}]
+        actual (reddit-nntp stub-grab-posts-from-reddit grab-comments-from-reddit)]
+    (is (= expected actual))))

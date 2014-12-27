@@ -33,8 +33,7 @@
   (-> (grab-posts-from-reddit)
                json/read-str
                extract-posts
-               ((partial map (fn [post]
-                               (augment-post-with-comments (grab-comments-from-reddit post) post))))
+               ((partial map #(augment-post-with-comments (grab-comments-from-reddit %) %)))
                ((partial map flatten-post-and-comments))))
 
 

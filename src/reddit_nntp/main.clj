@@ -25,7 +25,7 @@
             "title" "Bar"}}]}}))
 
 (defn pretty-print-post [post]
-  (select-keys post ["title" "id" "comments"]))
+  (select-keys post ["title" "id" "children"]))
 
 (defn grab-comments-from-reddit [post]
   { "id" "foo"
@@ -35,7 +35,7 @@
                  "children" [] ]})
 
 (defn augment-post-with-comments [comments, post]
-  (assoc post "comments" comments))
+  (assoc post "children" comments))
 
 (defn reddit-nntp [grab-posts-from-reddit grab-comments-from-reddit]
   (-> (grab-posts-from-reddit)

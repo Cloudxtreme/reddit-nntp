@@ -25,7 +25,7 @@
                            "body" "Yes" } ]
         expected { "id" "2qha"
                    "title" "Is AES broken?"
-                   "comments" [ { "id" "foo"
+                   "children" [ { "id" "foo"
                                   "body" "No." }
                                 { "id" "bar"
                                   "body" "Yes" } ] }
@@ -35,13 +35,13 @@
 (deftest test-reddit-nntp
   (let
       [ expected
-         [{"comments"
+         [{"children"
             {"id" "foo",
              "body" "This.",
              "children" ["id" "foo.bar" "body" "Worst comment" "children" []]},
            "id" "2qha",
            "title" "Foo"}
-          {"comments"
+          {"children"
             {"id" "foo",
              "body" "This.",
              "children" ["id" "foo.bar" "body" "Worst comment" "children" []]},

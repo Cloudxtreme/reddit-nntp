@@ -37,6 +37,13 @@
 (defn augment-post-with-comments [comments, post]
   (assoc post "children" comments))
 
+(defn flatten-post-and-comments [post-and-comments]
+  (let [has-children (fn [x] (contains? x "children"))
+        get-children (fn [x] (get x "children"))
+        nodes (tree-seq has-children get-children post-and-comments)
+        useful-keys (fn [x] (select-keys x ["id" "body" "title"]))]
+    (map useful-keys nodes)))
+
 (defn reddit-nntp [grab-posts-from-reddit grab-comments-from-reddit]
   (-> (grab-posts-from-reddit)
                json/read-str

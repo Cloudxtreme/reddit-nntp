@@ -31,10 +31,10 @@
 
 (defn reddit-nntp [grab-posts-from-reddit grab-comments-from-reddit]
   (-> (grab-posts-from-reddit)
-               json/read-str
-               extract-posts
-               ((partial map #(augment-post-with-comments (grab-comments-from-reddit %) %)))
-               ((partial map flatten-post-and-comments))))
+      json/read-str
+      extract-posts
+      ((partial map #(augment-post-with-comments (grab-comments-from-reddit %) %)))
+      ((partial map flatten-post-and-comments))))
 
 
 (defn -main

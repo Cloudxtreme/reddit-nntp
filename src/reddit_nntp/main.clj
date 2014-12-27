@@ -12,9 +12,6 @@
         resp (client/get "http://www.reddit.com/r/crypto/.json" opts)]
     (get resp :body)))
 
-(defn pretty-print-post [post]
-  (select-keys post ["title" "id" "children"]))
-
 (defn grab-comments-from-reddit [post]
   [{ "id" "foo"
     "body" "This."

@@ -27,12 +27,24 @@
             "title" "Bar"}}]}}))
 
 (defn pretty-print-post [post]
-  (select-keys post ["title" "id"]))
+  (select-keys post ["title" "id" "comments"]))
+
+(defn grab-comments-from-reddit [post]
+  { "id" "foo"
+    "body" "This."
+    "children" [ "id" "foo.bar"
+                 "body" "Worst comment"
+                 "children" [] ]})
+
+(defn augment-post-with-comments [comments, post]
+  (assoc post "comments" comments))
 
 (defn -main
   [& args]
   (println (-> (grab-posts-from-reddit)
                json/read-str
                extract-posts
+               ((partial map (fn [post]
+                               (augment-post-with-comments (grab-comments-from-reddit post) post))))
                ((partial map pretty-print-post)))))
 

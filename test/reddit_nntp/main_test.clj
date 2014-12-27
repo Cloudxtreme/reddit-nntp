@@ -15,3 +15,19 @@
                                            "title" "Bar" }}]}}
         actual (extract-posts input)]
     (is (= expected actual))))
+
+(deftest test-augment-post-with-comments
+  (let [input-post { "id" "2qha"
+                     "title" "Is AES broken?" }
+        input-comments [ { "id" "foo"
+                           "body" "No." }
+                         { "id" "bar"
+                           "body" "Yes" } ]
+        expected { "id" "2qha"
+                   "title" "Is AES broken?"
+                   "comments" [ { "id" "foo"
+                                  "body" "No." }
+                                { "id" "bar"
+                                  "body" "Yes" } ] }
+        actual (augment-post-with-comments input-comments input-post)]
+    (is (= expected actual))))

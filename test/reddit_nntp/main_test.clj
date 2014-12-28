@@ -48,12 +48,12 @@
 (deftest test-reddit-nntp
   (let
       [expected
-       [[{"id" "2qha" "title" "Foo"}
-         {"id" "foo" "body" "This."}
-         {"id" "foo.bar" "body" "Worst comment"}]
-        [{"id" "3ab4" "title" "Bar"}
-         {"id" "foo" "body" "This."}
-         {"id" "foo.bar" "body" "Worst comment"}]]
+       [[{"id" "2qha" "title" "Foo" "references" []}
+         {"id" "foo" "body" "This." "references" ["2qha"]}
+         {"id" "foo.bar" "body" "Worst comment" "references" ["2qha" "foo"]}]
+        [{"id" "3ab4" "title" "Bar" "references" []}
+         {"id" "foo" "body" "This." "references" ["3ab4"]}
+         {"id" "foo.bar" "body" "Worst comment" "references" ["3ab4" "foo"]}]]
        actual (reddit-nntp stub-grab-posts-from-reddit grab-comments-from-reddit)]
        
     (is (= expected actual))))
@@ -84,3 +84,19 @@
                 {"id" "baz"}]
        actual (flatten-post-and-comments input)]
     (is (= expected actual))))
+
+(deftest test-fill-in-references-from-parent-ids
+  (let
+      [input { "id" "foo"
+               "children" [ { "id" "bar"
+                              "children" [ { "id" "baz" } ] }]}
+       expected { "id" "foo"
+                  "references" []
+                  "children" [ { "id" "bar"
+                                 "references" [ "foo" ]
+                                 "children" [ { "id" "baz"
+                                                "children" []
+                                                "references" [ "foo" "bar" ]}]}]}
+       actual (fill-in-references-from-parent-ids input)]
+    (is (= expected actual))))
+

@@ -19,6 +19,14 @@
                    "body" "Worst comment"
                    "children" [] }]}])
 
+(defn- fill-in-references-from-parent-ids-recur [post-with-comments parent-references]
+  (let [new-parent-references (conj parent-references (post-with-comments "id"))
+        new-comments (map (fn [comment] (fill-in-references-from-parent-ids-recur comment new-parent-references)) (post-with-comments "children"))]
+    (assoc post-with-comments "children" new-comments "references" parent-references)))
+
+(defn fill-in-references-from-parent-ids [post-with-comments]
+  (fill-in-references-from-parent-ids-recur post-with-comments []))
+    
 (defn augment-post-with-comments [comments, post]
   (assoc post "children" comments))
 
@@ -26,7 +34,7 @@
   (let [has-children #(contains? % "children")
         get-children #(get % "children")
         nodes (tree-seq has-children get-children post-and-comments)
-        useful-keys #(select-keys % ["id" "body" "title"])]
+        useful-keys #(select-keys % ["id" "body" "title" "references"])]
     (map useful-keys nodes)))
 
 (defn reddit-nntp [grab-posts-from-reddit grab-comments-from-reddit]
@@ -34,6 +42,7 @@
       json/read-str
       extract-posts
       ((partial map #(augment-post-with-comments (grab-comments-from-reddit %) %)))
+      ((partial map fill-in-references-from-parent-ids))
       ((partial map flatten-post-and-comments))))
 
 

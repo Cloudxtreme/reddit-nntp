@@ -40,15 +40,12 @@
        (take-while (complement zip/end?))
        (map zip/node)))
 
-(defn fill-in-references-from-parent-ids-recur [pwcz]
-  (zip-walk pwcz
+(defn fill-in-references-from-parent-ids [post-with-comments]
+  (zip-walk (post-zip post-with-comments)
             (fn [comment]
               (let [references (map #(% "id") (reverse (zip/path comment)))
                     add-references #(assoc % "references" references)]
                 (#(zip/edit % add-references) comment)))))
-
-(defn fill-in-references-from-parent-ids [post-with-comments]
-  (fill-in-references-from-parent-ids-recur (post-zip post-with-comments)))
 
 (defn flatten-post-and-comments [post-and-comments]
   (zip-nodes (post-zip post-and-comments)))

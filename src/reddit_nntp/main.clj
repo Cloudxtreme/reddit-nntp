@@ -60,11 +60,13 @@
   (->> (grab-posts-from-reddit)
        json/read-str
        extract-posts
-       (map #(augment-post-with-comments (grab-comments-from-reddit %) %))
-       (map fill-in-references-from-parent-ids)
-       (map flatten-post-and-comments)
-       (map #(map useful-keys %))))
-
+       (map
+        (fn [post]
+          (->> post
+               (#(augment-post-with-comments (grab-comments-from-reddit %) %))
+               fill-in-references-from-parent-ids
+               flatten-post-and-comments
+               (map useful-keys))))))
 
 (defn -main
   [& args]

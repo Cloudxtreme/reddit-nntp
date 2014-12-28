@@ -1,7 +1,8 @@
 (ns reddit-nntp.main
   (:require [clj-http.client :as client]
             [clojure.data.json :as json]
-            [clojure.zip :as zip]))
+            [clojure.zip :as zip]
+            [clojure.string :as string]))
 
 (defn extract-posts [posts-repr]
   (into #{}
@@ -52,6 +53,13 @@
 
 (defn useful-keys [post-and-comments]
   (select-keys post-and-comments ["id" "body" "title" "references"]))
+
+(defn render-nntp [post]
+  (string/join "\n"
+               [(string/join ["Subject: " (post "title")])
+                (string/join ["References: " (string/join " " (map #(string/join ["<" % "@reddit-nntp>"]) (post "references")))])
+                (string/join ["Message-ID: " (string/join ["<" (post "id") "@reddit-nntp>"])])
+                ""]))
 
 (defn reddit-nntp [grab-posts-from-reddit grab-comments-from-reddit]
   (->> (grab-posts-from-reddit)

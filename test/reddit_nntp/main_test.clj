@@ -73,3 +73,14 @@
        actual (fill-in-references-from-parent-ids input)]
     (is (= expected actual))))
 
+(deftest test-render-nntp
+  (let
+      [input { "id" "foo"
+               "references" ["baz" "lol"]
+               "title" "Ho ho ho" }
+       expected "Subject: Ho ho ho
+References: <baz@reddit-nntp> <lol@reddit-nntp>
+Message-ID: <foo@reddit-nntp>
+"
+       actual (render-nntp input)]
+    (is (= expected actual))))

@@ -58,12 +58,12 @@
          (map useful-keys))))
 
 (defn reddit-nntp [grab-posts-from-reddit grab-comments-from-reddit]
-  (-> (grab-posts-from-reddit)
-      json/read-str
-      extract-posts
-      ((partial map #(augment-post-with-comments (grab-comments-from-reddit %) %)))
-      ((partial map fill-in-references-from-parent-ids))
-      ((partial map flatten-post-and-comments))))
+  (->> (grab-posts-from-reddit)
+       json/read-str
+       extract-posts
+       (map #(augment-post-with-comments (grab-comments-from-reddit %) %))
+       (map fill-in-references-from-parent-ids)
+       (map flatten-post-and-comments)))
 
 
 (defn -main

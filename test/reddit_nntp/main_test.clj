@@ -89,7 +89,7 @@
   (let
       [input { "id" "foo"
                "children" [ { "id" "bar"
-                              "children" [ { "id" "baz" } ] }]}
+                              "children" [ { "id" "baz" "children" [] } ] }]}
        expected { "id" "foo"
                   "references" []
                   "children" [ { "id" "bar"

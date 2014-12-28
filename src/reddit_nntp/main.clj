@@ -1,6 +1,7 @@
 (ns reddit-nntp.main
   (:require [clj-http.client :as client]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            [clojure.zip :as zip]))
 
 (defn extract-posts [posts-repr]
   (into #{}
@@ -19,23 +20,42 @@
                    "body" "Worst comment"
                    "children" [] }]}])
 
-(defn- fill-in-references-from-parent-ids-recur [post-with-comments parent-references]
-  (let [new-parent-references (conj parent-references (post-with-comments "id"))
-        new-comments (map (fn [comment] (fill-in-references-from-parent-ids-recur comment new-parent-references)) (post-with-comments "children"))]
-    (assoc post-with-comments "children" new-comments "references" parent-references)))
-
-(defn fill-in-references-from-parent-ids [post-with-comments]
-  (fill-in-references-from-parent-ids-recur post-with-comments []))
-    
 (defn augment-post-with-comments [comments, post]
   (assoc post "children" comments))
 
+(defn post-zip [post-with-comments]
+  (zip/zipper (constantly true)
+              #(seq (% "children"))
+              #(augment-post-with-comments %2 %1)
+              post-with-comments))
+
+(defn zip-walk [loc f]
+  (if (zip/end? loc)
+    (zip/root loc)
+    (zip-walk (zip/next (f loc)) f)))
+
+(defn zip-nodes [loc]
+  (->> loc
+       (iterate zip/next)
+       (take-while (complement zip/end?))
+       (map zip/node)))
+
+(defn fill-in-references-from-parent-ids-recur [pwcz]
+  (zip-walk pwcz
+            (fn [comment]
+              (let [references (map #(% "id") (reverse (zip/path comment)))
+                    add-references #(assoc % "references" references)]
+                (#(zip/edit % add-references) comment)))))
+
+(defn fill-in-references-from-parent-ids [post-with-comments]
+  (fill-in-references-from-parent-ids-recur (post-zip post-with-comments)))
+
 (defn flatten-post-and-comments [post-and-comments]
-  (let [has-children #(contains? % "children")
-        get-children #(get % "children")
-        nodes (tree-seq has-children get-children post-and-comments)
-        useful-keys #(select-keys % ["id" "body" "title" "references"])]
-    (map useful-keys nodes)))
+  (let [useful-keys #(select-keys % ["id" "body" "title" "references"])]
+    (->> post-and-comments
+         post-zip
+         zip-nodes
+         (map useful-keys))))
 
 (defn reddit-nntp [grab-posts-from-reddit grab-comments-from-reddit]
   (-> (grab-posts-from-reddit)

@@ -51,11 +51,10 @@
   (fill-in-references-from-parent-ids-recur (post-zip post-with-comments)))
 
 (defn flatten-post-and-comments [post-and-comments]
-  (let [useful-keys #(select-keys % ["id" "body" "title" "references"])]
-    (->> post-and-comments
-         post-zip
-         zip-nodes
-         (map useful-keys))))
+  (zip-nodes (post-zip post-and-comments)))
+
+(defn useful-keys [post-and-comments]
+  (select-keys post-and-comments ["id" "body" "title" "references"]))
 
 (defn reddit-nntp [grab-posts-from-reddit grab-comments-from-reddit]
   (->> (grab-posts-from-reddit)
@@ -63,10 +62,10 @@
        extract-posts
        (map #(augment-post-with-comments (grab-comments-from-reddit %) %))
        (map fill-in-references-from-parent-ids)
-       (map flatten-post-and-comments)))
+       (map flatten-post-and-comments)
+       (map #(map useful-keys %))))
 
 
 (defn -main
   [& args]
   (println (reddit-nntp grab-posts-from-reddit grab-comments-from-reddit)))
-  

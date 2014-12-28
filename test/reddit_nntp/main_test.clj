@@ -58,33 +58,6 @@
        
     (is (= expected actual))))
 
-(deftest test-flatten-post-with-no-comments
-  (let
-      [input { "id" "foo" }
-       expected [ { "id" "foo" } ]
-       actual (flatten-post-and-comments input)]
-    (is (= expected actual))))
-
-(deftest test-flatten-post-with-non-nested-comments
-  (let
-      [input { "id" "foo"
-               "children" [ { "id" "bar" }]}
-       expected [ { "id" "foo" }
-                  { "id" "bar" } ]
-       actual (flatten-post-and-comments input)]
-    (is (= expected actual))))
-
-(deftest test-flatten-post-with-nested-coments
-  (let
-      [input { "id" "foo"
-               "children" [ { "id" "bar"
-                              "children" [ { "id" "baz" } ] }]}
-       expected [{"id" "foo"}
-                {"id" "bar"}
-                {"id" "baz"}]
-       actual (flatten-post-and-comments input)]
-    (is (= expected actual))))
-
 (deftest test-fill-in-references-from-parent-ids
   (let
       [input { "id" "foo"
